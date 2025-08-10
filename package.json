@@ -2,10 +2,10 @@
   "name": "ls",
   "version": "1.0.0",
   "description": "Try me",
-  "main": "index.js",
+  "main": "api/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": " npx nodemon src/Index.js"
+    "start": " npx nodemon src api/Index.js"
   },
   "repository": {
     "type": "git",
