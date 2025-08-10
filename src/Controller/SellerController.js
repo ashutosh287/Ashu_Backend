@@ -153,8 +153,8 @@ exports.loginSeller = async (req, res) => {
     // ✅ Save token in HTTP-only cookie
     res.cookie("Sellertoken", token, {
       httpOnly: true,       // JS can't access
-      secure: false,        // Localhost/IP testing
-      sameSite: "lax",      // Local me better
+      secure: true,        // Localhost/IP testing
+      sameSite: "None",      // Local me better
       path: "/",            // All routes
       maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
     });
@@ -347,7 +347,7 @@ exports.resetSellerPassword = async (req, res) => {
   const hashedPassword = await bcrypt.hash(newPassword, 10);
   seller.password = hashedPassword;
   seller.otp = null;
-  seller.otpExpiry = null;
+  seller.otpExpires = null;
   await seller.save();
 
   res.status(200).json({ msg: "Password reset successfully" });
