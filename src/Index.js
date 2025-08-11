@@ -153,8 +153,20 @@ app.use(express.json());
 app.use(cookieParser());
 
 // CORS
+const allowedOrigins = [
+  'http://localhost:5173',       // dev frontend
+  'https://your-frontend-domain.com'  // production frontend domain
+];
 app.use(cors({
-  origin: ["http://localhost:5173", "https://ashu-fronted.vercel.app"],
+  origin: function (origin, callback) {
+    // allow requests with no origin like mobile apps or curl requests
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.indexOf(origin) === -1) {
+      const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
+      return callback(new Error(msg), false);
+    }
+    return callback(null, true);
+  },
   credentials: true
 }));
 
@@ -168,7 +180,10 @@ app.use('/api/user', userRoutes);
 app.use('/api/search', SearchRoutes);
 
 // MongoDB connect
-mongoose.connect(process.env.MongoDBUrl)
+mongoose.connect(process.env.MONGODB_URL, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+})
   .then(() => console.log('✅ MongoDB is connected'))
   .catch((e) => console.log('❌ MongoDB connection error:', e));
 
@@ -177,5 +192,8 @@ app.get('/', (req, res) => {
   res.send('Backend is running successfully 🚀');
 });
 
-// Export for Vercel
-module.exports = app;
+// Listen on PORT from env or 5000
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});
