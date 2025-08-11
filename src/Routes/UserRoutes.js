@@ -8,10 +8,10 @@ const {getUserProfile , changeEmail , deleteAccount , resetPasswordEmail , sendR
 
 
 
-router.post('/User/createUser' , createUser)
-router.post('/User/verifyOtp/:id' , VerifUserOTP)
-router.post('/User/Login' , LoginUser)
-router.get('/User/Orders' , VerifyUser , getUserOrders)
+router.post('/createUser' , createUser)
+router.post('/verifyOtp/:id' , VerifUserOTP)
+router.post('/login' , LoginUser)
+router.get('/Orders' , VerifyUser , getUserOrders)
 router.get('/orders/ready' , VerifyUser , getReadyOrders)
 router.post("/request-password-reset", requestPasswordReset);
 router.post("/reset-password/:id", resetPassword);
@@ -22,13 +22,13 @@ router.post('/forgot-password/verify-otp', verifyResetOtp );
 router.post('/forgot-password/reset-password',resetPasswordEmail);
 router.post('/forgot-password/resend-otp',ResendOtp);
 
-router.get("/user/profile", VerifyUser, getUserProfile);
+router.get("/profile", VerifyUser, getUserProfile);
 router.patch('/change-email' , VerifyUser , changeEmail);
 router.patch('/delete-account', VerifyUser, deleteAccount);
 
 
 router.get("/check-auth", VerifyUser ,  checkUserAuthController);
-router.post("/user/logout", LogoutUser);
+router.post("/logout", LogoutUser);
 
 
 

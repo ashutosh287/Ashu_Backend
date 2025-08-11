@@ -271,7 +271,13 @@ exports.getRevenueStats = async (req, res) => {
       {
         $group: {
           _id: {
-            day: { $dateToString: { format: "%Y-%m-%d", date: "$placedAt" } },
+            day: {
+              $dateToString: {
+                format: "%Y-%m-%d",
+                date: "$placedAt",
+                timezone: "Asia/Kolkata" // ✅ Force IST timezone
+              },
+            },
           },
           total: { $sum: "$totalAmount" },
           count: { $sum: 1 }, // ✅ number of orders that day
@@ -282,7 +288,9 @@ exports.getRevenueStats = async (req, res) => {
 
     console.log("📊 Aggregated Revenue Data:", revenueData);
 
-    const todayStr = new Date().toISOString().slice(0, 10);
+    const todayStr = new Date()
+      .toLocaleDateString("en-CA", { timeZone: "Asia/Kolkata" });
+    // ✅ "YYYY-MM-DD" in IST
 
     const todayRevenue = revenueData
       .filter((d) => d._id.day === todayStr)
@@ -304,12 +312,13 @@ exports.getRevenueStats = async (req, res) => {
       chartData: revenueData.map((d) => ({
         day: d._id.day,
         total: d.total,
-        count: d.count, // ✅ now frontend can show order count too
+        count: d.count,
       })),
     });
   } catch (err) {
     console.error("❌ Revenue error:", err);
     res.status(500).json({ success: false, msg: "Something went wrong" });
   }
-};  
+};
+
 

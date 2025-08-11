@@ -82,7 +82,7 @@ router.get('/shop-products/:id', PublicCtrl.getProductsByShop);
 router.post('/orders', VerifyUser , OrderCtrl.placeOrder);
 router.post('/Rorder' , VerifyUser , cartController.ROrder);
 router.post('/ContactUs', FooterCtrl.contactUsController);
-
+ 
 
 
 router.post('/cart', cartController.addToCart);

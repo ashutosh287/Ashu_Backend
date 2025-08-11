@@ -36,6 +36,7 @@ const VerifySeller = async (req, res, next) => {
     // 🔹 Get token from cookies instead of headers
     const SellerToken = req.cookies?.Sellertoken;
 
+
     if (!SellerToken) {
       return res.status(401).json({ message: 'Token missing' });
     }
@@ -57,6 +58,7 @@ const VerifySeller = async (req, res, next) => {
     req.seller = seller;
     req.sellerId = seller._id;
     req.shopId = seller.shopId;
+
 
     next();
   } catch (err) {
