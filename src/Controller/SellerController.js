@@ -87,31 +87,31 @@ exports.createSeller = async (req, res) => {
 
 
 
-exports.verifySellerOtp = async (req, res) => {
-  const { email, otp } = req.body;
+// exports.verifySellerOtp = async (req, res) => {
+//   const { email, otp } = req.body;
 
-  const seller = await Seller.findOne({ email });
-  if (!seller) return res.status(400).json({ msg: "Seller not found." });
+//   const seller = await Seller.findOne({ email });
+//   if (!seller) return res.status(400).json({ msg: "Seller not found." });
 
-  if (seller.isVerified) {
-    return res.status(400).json({ msg: "Seller already verified." });
-  }
+//   if (seller.isVerified) {
+//     return res.status(400).json({ msg: "Seller already verified." });
+//   }
 
-  if (seller.otp !== otp) {
-    return res.status(400).json({ msg: "Invalid OTP." });
-  }
+//   if (seller.otp !== otp) {
+//     return res.status(400).json({ msg: "Invalid OTP." });
+//   }
 
-  if (Date.now() > seller.otpExpires) {
-    return res.status(400).json({ msg: "OTP expired." });
-  }
+//   if (Date.now() > seller.otpExpires) {
+//     return res.status(400).json({ msg: "OTP expired." });
+//   }
 
-  seller.isVerified = true;
-  seller.otp = null;
-  seller.otpExpires = null;
-  await seller.save();
+//   seller.isVerified = true;
+//   seller.otp = null;
+//   seller.otpExpires = null;
+//   await seller.save();
 
-  res.status(200).json({ msg: "Seller verified successfully." });
-};
+//   res.status(200).json({ msg: "Seller verified successfully." });
+// };
 
 
 
