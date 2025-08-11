@@ -140,36 +140,37 @@ const path = require('path');
 require('dotenv').config();
 const cookieParser = require('cookie-parser');
 
-const routes = require('../Routes/Routes');
-const sellerRoutes = require('../Routes/SellerRoutes');
-const userRoutes = require('../Routes/UserRoutes');
-const SearchRoutes = require('../Routes/SearchRoutes');
+// Routes
+const routes = require('./Routes/Routes');
+const sellerRoutes = require('./Routes/SellerRoutes');
+const userRoutes = require('./Routes/UserRoutes');
+const SearchRoutes = require('./Routes/SearchRoutes');
 
 const app = express();
 
-// ✅ Middlewares
+// Middlewares
 app.use(express.json());
 app.use(cookieParser());
 
-// ✅ CORS (change to your deployed frontend URL later)
+// CORS
 app.use(cors({
-  origin: ["http://localhost:5173", "https://ashu-fronted.vercel.app/"],
+  origin: ["http://localhost:5173", "https://ashu-fronted.vercel.app"],
   credentials: true
 }));
 
-// ✅ Static file uploads
-app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
+// Static file uploads
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// ✅ API Routes
-app.use('/', routes);
-app.use('/api', sellerRoutes);
-app.use('/User', userRoutes);
-app.use('/search', SearchRoutes);
+// API Routes
+app.use('/api', routes);
+app.use('/api/seller', sellerRoutes);
+app.use('/api/user', userRoutes);
+app.use('/api/search', SearchRoutes);
 
-// ✅ MongoDB connect
+// MongoDB connect
 mongoose.connect(process.env.MongoDBUrl)
   .then(() => console.log('✅ MongoDB is connected'))
   .catch((e) => console.log('❌ MongoDB connection error:', e));
 
-// ✅ Export for Vercel
+// Export for Vercel
 module.exports = app;
