@@ -88,12 +88,57 @@
 
 
 
+// const express = require('express');
+// const mongoose = require('mongoose');
+// const cors = require('cors');
+// const path = require('path');
+// require('dotenv').config();
+// const cookieParser = require("cookie-parser");
+
+// const routes = require('./Routes/Routes');
+// const sellerRoutes = require('./Routes/SellerRoutes');
+// const userRoutes = require('./Routes/UserRoutes');
+// const SearchRoutes = require('./Routes/SearchRoutes');
+
+// const app = express();
+
+// // ✅ Middlewares
+// app.use(express.json());
+// app.use(cookieParser());
+
+// // ✅ CORS for both local & production
+// app.use(cors({
+//   origin: [
+//     process.env.FRONTEND_URL || "http://localhost:5173",
+//     "https://yourfrontend.vercel.app"
+//   ],
+//   credentials: true
+// }));
+
+// // ✅ Static uploads
+// app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+// // ✅ API Routes
+// app.use('/', routes);
+// app.use('/api', sellerRoutes);
+// app.use('/User', userRoutes);
+// app.use('/search', SearchRoutes);
+
+// // ✅ MongoDB connect
+// mongoose.connect(process.env.MongoDBUrl)
+//   .then(() => console.log('✅ MongoDB is connected'))
+//   .catch((e) => console.log('❌ MongoDB connection error:', e));
+
+// module.exports = app;
+
+
+
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const path = require('path');
 require('dotenv').config();
-const cookieParser = require("cookie-parser");
+const cookieParser = require('cookie-parser');
 
 const routes = require('./Routes/Routes');
 const sellerRoutes = require('./Routes/SellerRoutes');
@@ -106,16 +151,13 @@ const app = express();
 app.use(express.json());
 app.use(cookieParser());
 
-// ✅ CORS for both local & production
+// ✅ CORS (update origin for your frontend domain later)
 app.use(cors({
-  origin: [
-    process.env.FRONTEND_URL || "http://localhost:5173",
-    "https://yourfrontend.vercel.app"
-  ],
+  origin: ["http://localhost:5173", "https://your-frontend.vercel.app"],
   credentials: true
 }));
 
-// ✅ Static uploads
+// ✅ Static file uploads
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // ✅ API Routes
@@ -129,5 +171,5 @@ mongoose.connect(process.env.MongoDBUrl)
   .then(() => console.log('✅ MongoDB is connected'))
   .catch((e) => console.log('❌ MongoDB connection error:', e));
 
-// ✅ Export for Vercel (No app.listen)
+// ✅ Export for Vercel
 module.exports = app;
