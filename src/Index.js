@@ -140,10 +140,10 @@ const path = require('path');
 require('dotenv').config();
 const cookieParser = require('cookie-parser');
 
-const routes = require('./Routes/Routes');
-const sellerRoutes = require('./Routes/SellerRoutes');
-const userRoutes = require('./Routes/UserRoutes');
-const SearchRoutes = require('./Routes/SearchRoutes');
+const routes = require('../Routes/Routes');
+const sellerRoutes = require('../Routes/SellerRoutes');
+const userRoutes = require('../Routes/UserRoutes');
+const SearchRoutes = require('../Routes/SearchRoutes');
 
 const app = express();
 
@@ -151,14 +151,14 @@ const app = express();
 app.use(express.json());
 app.use(cookieParser());
 
-// ✅ CORS (update origin for your frontend domain later)
+// ✅ CORS (change to your deployed frontend URL later)
 app.use(cors({
   origin: ["http://localhost:5173", "https://your-frontend.vercel.app"],
   credentials: true
 }));
 
 // ✅ Static file uploads
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
 // ✅ API Routes
 app.use('/', routes);
