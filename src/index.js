@@ -155,7 +155,7 @@ app.use(cookieParser());
 // CORS
 const allowedOrigins = [
   'http://localhost:5173',       // dev frontend
-  'https://your-frontend-domain.com'  // production frontend domain
+  // 'https://your-frontend-domain.com'  // production frontend domain
 ];
 app.use(cors({
   origin: function (origin, callback) {
@@ -187,13 +187,10 @@ mongoose.connect(process.env.MONGODB_URL, {
   .then(() => console.log('✅ MongoDB is connected'))
   .catch((e) => console.log('❌ MongoDB connection error:', e));
 
-// Test route
-app.get('/', (req, res) => {
-  res.send('Backend is running successfully 🚀');
-});
+
 
 // Listen on PORT from env or 5000
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5005;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
