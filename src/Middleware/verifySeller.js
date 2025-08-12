@@ -27,7 +27,7 @@
 
 
 const jwt = require('jsonwebtoken');
-const Seller = require('../Model/Seller');
+const Seller = require('../Model/Seller.js');
 require('dotenv').config();
 
 

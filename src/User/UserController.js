@@ -1,11 +1,11 @@
-const UserModel = require('../userModel/userModel')
+const UserModel = require('../userModel/userModel.js')
 const bcrypt = require('bcrypt');
 require('dotenv').config();
-const { verifyOtp } = require('../Mail/VerifyOtpMail')
+const { verifyOtp } = require('../Mail/VerifyOtpMail.js')
 const jwt = require("jsonwebtoken")
-const { sendOtpEmail } = require('../Mail/SendOtpEmail')
+const { sendOtpEmail } = require('../Mail/SendOtpEmail.js')
 
-
+  
 exports.createUser = async (req, res) => {
   try {
     const data = req.body;
