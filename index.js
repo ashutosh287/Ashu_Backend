@@ -180,10 +180,7 @@ app.use('/api/user', userRoutes);
 app.use('/api/search', SearchRoutes);
 
 // MongoDB connect
-mongoose.connect(process.env.MONGODB_URL, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-})
+mongoose.connect(process.env.MONGODB_URL)
   .then(() => console.log('✅ MongoDB is connected'))
   .catch((e) => console.log('❌ MongoDB connection error:', e));
 
