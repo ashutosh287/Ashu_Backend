@@ -1,4 +1,4 @@
-const Seller = require('../Model/.js');
+const Seller = require('../Model/Seller.js');
 const bcrypt = require('bcrypt');
 const generateToken = require('../Utils/GenerateToken.js');
 const Shop = require('../Model/Shop.js');
