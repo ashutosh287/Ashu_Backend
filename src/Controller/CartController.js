@@ -1,9 +1,9 @@
 
-const Cart = require('../model/Cart');
+const Cart = require('../Model/Cart.js');
 const mongoose = require('mongoose');
-const Order = require('../Model/Order');
-const Rorder = require('../Model/Rorder');
-const Product = require('../Model/Product');
+const Order = require('../Model/Order.js');
+const Rorder = require('../Model/Rorder.js');
+const Product = require('../Model/Product.js');
 
 exports.addToCart = async (req, res) => {
   try {

@@ -1,6 +1,6 @@
 // Controller/sellerProductController.js
-const Seller = require('../Model/Seller');
-const Product = require('../Model/Product');
+const Seller = require('../Model/Seller.js');
+const Product = require('../Model/Product.js');
 const cloudinary = require('cloudinary').v2
 require("dotenv").config();
 const slugify = require("slugify");

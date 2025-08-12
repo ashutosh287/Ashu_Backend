@@ -1,9 +1,9 @@
-const Seller = require('../Model/Seller');
+const Seller = require('../Model/.js');
 const bcrypt = require('bcrypt');
-const generateToken = require('../Utils/GenerateToken');
-const Shop = require('../Model/Shop');
+const generateToken = require('../Utils/GenerateToken.js');
+const Shop = require('../Model/Shop.js');
 const mongoose = require('mongoose');
-const { sendOtpEmailSeller } = require('../Mail/SellerVerifyOTP');
+const { sendOtpEmailSeller } = require('../Mail/SellerVerifyOTP.js');
 
 const slugify = (text) => {
   return text.toLowerCase().replace(/\s+/g, '-').replace(/[^\w\-]+/g, '');

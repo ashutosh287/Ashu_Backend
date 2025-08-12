@@ -1,9 +1,9 @@
-const Product = require('../Model/Product');
-const Order = require('../Model/Order');
-const Shop = require('../Model/Shop');
+const Product = require('../Model/Product.js');
+const Order = require('../Model/Order.js');
+const Shop = require('../Model/Shop.js');
 const mongoose = require('mongoose');
-const UserModel = require('../userModel/userModel');
-const { sendOtpEmail } = require('../Mail/SendOtpEmail')
+const UserModel = require('../userModel/userModel.js');
+const { sendOtpEmail } = require('../Mail/SendOtpEmail.js')
 const bcrypt = require('bcrypt');
 
 
