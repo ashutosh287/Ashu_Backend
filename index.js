@@ -154,7 +154,7 @@ app.use(cookieParser());
 
 // CORS setup: allow your frontend(s)
 const allowedOrigins = [
-  'https://ashu-fronted.vercel.app', // Production frontend URL (no trailing slash)
+  'https://ashu-fronted.vercel.app/', // Production frontend URL (no trailing slash)
   'http://localhost:3000',            // Local frontend URL for development
 ];
 
