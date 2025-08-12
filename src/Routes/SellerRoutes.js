@@ -1,12 +1,12 @@
 const express = require('express');
 const router = express.Router();
-const upload = require('../Middleware/Upload');
-const VerifySeller = require('../Middleware/verifySeller')
+const upload = require('../Middleware/Upload.js');
+const VerifySeller = require('../Middleware/verifySeller.js')
 
-const SellerCtrl = require('../Controller/SellerController');
-const ProductCtrl = require('../Controller/PublicController');
-const OrderCtrl = require('../Controller/OrderController');
-const sellerProductCtrl = require('../Controller/sellerProductController');
+const SellerCtrl = require('../Controller/SellerController.js');
+const ProductCtrl = require('../Controller/PublicController.js');
+const OrderCtrl = require('../Controller/OrderController.js');
+const sellerProductCtrl = require('../Controller/sellerProductController.js');
 
 router.post('/signup', SellerCtrl.createSeller);
 router.post('/login', SellerCtrl.loginSeller);

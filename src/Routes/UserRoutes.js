@@ -1,10 +1,10 @@
 const express = require ("express");
 const router = express.Router();
 
-const {createUser , VerifUserOTP , LoginUser , requestPasswordReset , resetPassword , changePassword , checkUserAuthController , LogoutUser} = require('../User/UserController');
-const { getUserOrders , getReadyOrders } = require("../Controller/OrderController");
-const VerifyUser = require('../Middleware/VerifyUser')
-const {getUserProfile , changeEmail , deleteAccount , resetPasswordEmail , sendResetOtp , verifyResetOtp , ResendOtp  } = require('../Controller/PublicController')
+const {createUser , VerifUserOTP , LoginUser , requestPasswordReset , resetPassword , changePassword , checkUserAuthController , LogoutUser} = require('../User/UserController.js');
+const { getUserOrders , getReadyOrders } = require("../Controller/OrderController.js");
+const VerifyUser = require('../Middleware/VerifyUser.js')
+const {getUserProfile , changeEmail , deleteAccount , resetPasswordEmail , sendResetOtp , verifyResetOtp , ResendOtp  } = require('../Controller/PublicController.js')
 
 
 

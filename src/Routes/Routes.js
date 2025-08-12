@@ -69,11 +69,11 @@
 
 const express = require('express');
 const router = express.Router();
-const PublicCtrl = require('../Controller/PublicController');
-const OrderCtrl = require('../Controller/OrderController');
-const cartController = require('../Controller/CartController')
-const VerifyUser = require('../Middleware/VerifyUser')
-const FooterCtrl = require('../Controller/FooterController');
+const PublicCtrl = require('../Controller/PublicController.js');
+const OrderCtrl = require('../Controller/OrderController.js');
+const cartController = require('../Controller/CartController.js')
+const VerifyUser = require('../Middleware/VerifyUser.js')
+const FooterCtrl = require('../Controller/FooterController.js');
 
 router.get('/public-products', PublicCtrl.getAllPublicProducts);
 router.get('/public-shops', PublicCtrl.getPublicShops);
