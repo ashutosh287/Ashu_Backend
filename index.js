@@ -152,11 +152,12 @@ const app = express();
 app.use(express.json());
 app.use(cookieParser());
 
-// CORS
+// CORS setup: allow your frontend(s)
 const allowedOrigins = [
-  'http://localhost:5173',       // dev frontend
-  // 'https://your-frontend-domain.com'  // production frontend domain
+  'https://ashu-fronted.vercel.app', // Production frontend URL (no trailing slash)
+  'http://localhost:3000',            // Local frontend URL for development
 ];
+
 app.use(cors({
   origin: function (origin, callback) {
     // allow requests with no origin like mobile apps or curl requests
@@ -167,7 +168,7 @@ app.use(cors({
     }
     return callback(null, true);
   },
-  credentials: true
+  credentials: true,
 }));
 
 // Static file uploads
@@ -184,9 +185,7 @@ mongoose.connect(process.env.MONGODB_URL)
   .then(() => console.log('✅ MongoDB is connected'))
   .catch((e) => console.log('❌ MongoDB connection error:', e));
 
-
-
-// Listen on PORT from env or 5000
+// Listen on PORT from env or default 5005
 const PORT = process.env.PORT || 5005;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
