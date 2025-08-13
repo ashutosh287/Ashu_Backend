@@ -2,54 +2,62 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const path = require('path');
-require('dotenv').config();
 const cookieParser = require('cookie-parser');
+require('dotenv').config();
 
 // Routes
-const routes = require('./src/Routes/Routes');
-const sellerRoutes = require('./src/Routes/SellerRoutes');
-const userRoutes = require('./src/Routes/UserRoutes');
-const SearchRoutes = require('./src/Routes/SearchRoutes');
+const routes = require('../src/Routes/Routes');
+const sellerRoutes = require('../src/Routes/SellerRoutes');
+const userRoutes = require('../src/Routes/UserRoutes');
+const SearchRoutes = require('../src/Routes/SearchRoutes');
 
 const app = express();
 
-// Middlewares
+// Core middlewares
 app.use(express.json());
 app.use(cookieParser());
 
-// ✅ CORS setup
+// CORS (no trailing slash!)
 const allowedOrigins = [
-  'https://ashu-fronted.vercel.app', // frontend production
-  'http://localhost:5173',           // local vite
+  'https://ashu-fronted.vercel.app',
+  'http://localhost:5173',
 ];
 
-app.use(cors({
-  origin: function (origin, callback) {
-    if (!origin) return callback(null, true); // allow server-to-server or curl requests
-    if (allowedOrigins.includes(origin)) {
-      return callback(null, true);
-    }
-    return callback(new Error('CORS policy: Origin not allowed'), false);
-  },
-  credentials: true,
-}));
+app.use(
+  cors({
+    origin(origin, cb) {
+      if (!origin) return cb(null, true); // curl/postman etc
+      if (allowedOrigins.includes(origin)) return cb(null, true);
+      return cb(new Error('CORS: Origin not allowed'), false);
+    },
+    credentials: true,
+  })
+);
 
-// Static file serving
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+// Static (⚠️ Vercel FS is ephemeral; use S3/Cloudinary in production)
+app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
 
-// API routes
+// Health check
+app.get('/api/health', (req, res) => {
+  res.json({ ok: true, msg: 'API healthy' });
+});
+
+// Mount your routes (keep /api prefix)
 app.use('/api', routes);
 app.use('/api/seller', sellerRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/search', SearchRoutes);
 
-// MongoDB connection
-mongoose.connect(process.env.MONGODB_URL)
-  .then(() => console.log('✅ MongoDB connected'))
-  .catch((err) => console.log('❌ MongoDB error:', err));
+// Mongo connect (top-level; ok for serverless cold starts)
+if (!global._mongooseConnected) {
+  mongoose
+    .connect(process.env.MONGODB_URL)
+    .then(() => {
+      global._mongooseConnected = true;
+      console.log('✅ MongoDB connected');
+    })
+    .catch((e) => console.error('❌ MongoDB error:', e));
+}
 
-// Start server
-const PORT = process.env.PORT || 5005;
-app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
-});
+// IMPORTANT: Export the Express app (NO app.listen here)
+module.exports = app;
