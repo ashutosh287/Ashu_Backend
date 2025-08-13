@@ -1,7 +1,3 @@
-
-
-
-
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
@@ -21,41 +17,39 @@ const app = express();
 app.use(express.json());
 app.use(cookieParser());
 
-// CORS setup: allow your frontend(s)
+// ✅ CORS setup
 const allowedOrigins = [
-  'https://ashu-fronted.vercel.app/', // Production frontend URL (no trailing slash)
-  'http://localhost:3000',            // Local frontend URL for development
+  'https://ashu-fronted.vercel.app', // frontend production
+  'http://localhost:5173',           // local vite
 ];
 
 app.use(cors({
   origin: function (origin, callback) {
-    // allow requests with no origin like mobile apps or curl requests
-    if (!origin) return callback(null, true);
-    if (allowedOrigins.indexOf(origin) === -1) {
-      const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
-      return callback(new Error(msg), false);
+    if (!origin) return callback(null, true); // allow server-to-server or curl requests
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
     }
-    return callback(null, true);
+    return callback(new Error('CORS policy: Origin not allowed'), false);
   },
   credentials: true,
 }));
 
-// Static file uploads
+// Static file serving
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// API Routes
+// API routes
 app.use('/api', routes);
 app.use('/api/seller', sellerRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/search', SearchRoutes);
 
-// MongoDB connect
+// MongoDB connection
 mongoose.connect(process.env.MONGODB_URL)
-  .then(() => console.log('✅ MongoDB is connected'))
-  .catch((e) => console.log('❌ MongoDB connection error:', e));
+  .then(() => console.log('✅ MongoDB connected'))
+  .catch((err) => console.log('❌ MongoDB error:', err));
 
-// Listen on PORT from env or default 5005
+// Start server
 const PORT = process.env.PORT || 5005;
 app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+  console.log(`🚀 Server running on port ${PORT}`);
 });
