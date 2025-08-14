@@ -13,9 +13,11 @@ const SearchRoutes = require('./src/Routes/SearchRoutes');
 const app = express();
 
 app.use(cors({
-    origin: '*', // Deployment ke baad exact frontend URL de sakte ho
+    origin: 'https://ashu-fronted.vercel.app', // no trailing slash
     credentials: true
 }));
+
+
 app.use(express.json());
 app.use(cookieParser());
 
@@ -27,11 +29,11 @@ app.use('/api/search', SearchRoutes);
 
 // MongoDB Connection
 mongoose.connect(process.env.MONGODB_URL)
-.then(() => console.log('✅ MongoDB Connected'))
-.catch(err => console.error('❌ MongoDB Connection Error:', err));
+    .then(() => console.log('✅ MongoDB Connected'))
+    .catch(err => console.error('❌ MongoDB Connection Error:', err));
 
 // Start server
-const PORT = process.env.PORT || 5005;
+const PORT = process.env.PORT || 'https://ashu-fronted.vercel.app' ;
 app.listen(PORT, () => {
     console.log(`🚀 Server running on port ${PORT}`);
 });
