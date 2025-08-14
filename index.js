@@ -19,10 +19,8 @@ app.use(cookieParser());
 
 // CORS (no trailing slash!)
 const allowedOrigins = [
-  'https://ashu-fronted.vercel.app',
   'http://localhost:5173',
 ];
-
 app.use(
   cors({
     origin(origin, cb) {
