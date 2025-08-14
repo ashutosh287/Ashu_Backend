@@ -27,6 +27,7 @@ app.use('/api/seller', sellerRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/search', SearchRoutes);
 
+
 // MongoDB Connection
 mongoose.connect(process.env.MONGODB_URL)
     .then(() => console.log('✅ MongoDB Connected'))
