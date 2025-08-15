@@ -21,9 +21,7 @@ app.use(cors({
 app.use(express.json());
 app.use(cookieParser());
 
-app.get('/favicon.ico', (req, res) => {
-    res.sendFile(path.join(__dirname, '../favicon.ico'));
-});
+app.get('/favicon.ico', (req, res) => res.status(204).end());
 
 // Root Route
 app.get('/', (req, res) => {
