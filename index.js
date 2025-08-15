@@ -1,27 +1,26 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
-const path = require('path');
 require('dotenv').config();
 const cookieParser = require('cookie-parser');
 
-const routes = require('./src/Routes/Routes');
-const sellerRoutes = require('./src/Routes/SellerRoutes');
-const userRoutes = require('./src/Routes/UserRoutes');
-const SearchRoutes = require('./src/Routes/SearchRoutes');
+const routes = require('../src/Routes/Routes');
+const sellerRoutes = require('../src/Routes/SellerRoutes');
+const userRoutes = require('../src/Routes/UserRoutes');
+const SearchRoutes = require('../src/Routes/SearchRoutes');
 
 const app = express();
 
 // CORS Setup
 app.use(cors({
-    origin: 'https://ashu-fronted.vercel.app', // frontend domain
+    origin: 'https://ashu-fronted.vercel.app',
     credentials: true
 }));
 
 app.use(express.json());
 app.use(cookieParser());
 
-// Root Route (Vercel main page)
+// Root Route
 app.get('/', (req, res) => {
     res.send('<h1>✅ Ashu Backend is Running</h1>');
 });
@@ -37,8 +36,5 @@ mongoose.connect(process.env.MONGODB_URL)
     .then(() => console.log('✅ MongoDB Connected'))
     .catch(err => console.error('❌ MongoDB Connection Error:', err));
 
-// Start server
-const PORT = process.env.PORT || 5005;
-app.listen(PORT, () => {
-    console.log(`🚀 Server running on port ${PORT}`);
-});
+// 👇 Ye change important hai — app.listen hata ke export karo
+module.exports = app;
