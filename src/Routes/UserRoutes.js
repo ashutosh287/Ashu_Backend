@@ -27,7 +27,7 @@ router.patch('/change-email' , VerifyUser , changeEmail);
 router.patch('/delete-account', VerifyUser, deleteAccount);
 
 
-router.get("/check-auth", VerifyUser ,  checkUserAuthController);
+router.get("/check-auth",   checkUserAuthController);
 router.post("/logout", LogoutUser);
 
 
