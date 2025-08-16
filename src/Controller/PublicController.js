@@ -22,8 +22,13 @@ exports.placeOrder = async (req, res) => {
 };
 
 exports.getPublicShops = async (req, res) => {
-  const shops = await Shop.find({ isApproved: true });
-  res.json(shops);
+  try {
+    const shops = await Shop.find({ isApproved: true }); // ya jo bhi filter hai
+    res.status(200).json(shops);
+  } catch (error) {
+    console.error('❌ Error fetching public shops:', error);
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
 };
 
 exports.getProductsByShop = async (req, res) => {
