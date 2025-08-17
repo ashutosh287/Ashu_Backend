@@ -79,19 +79,19 @@ router.get('/public-products', PublicCtrl.getAllPublicProducts);
 router.get('/public-shops', PublicCtrl.getPublicShops);
 router.get('/shop-products/:id', PublicCtrl.getProductsByShop);
 
-router.post('/orders', VerifyUser , OrderCtrl.placeOrder);
-router.post('/Rorder' , VerifyUser , cartController.ROrder);
+router.post('/orders', VerifyUser, OrderCtrl.placeOrder);
+router.post('/Rorder', VerifyUser, cartController.ROrder);
 router.post('/ContactUs', FooterCtrl.contactUsController);
- 
 
 
-router.post('/cart', cartController.addToCart);
-router.get('/cart/:shopId' , cartController.getCartByShop)
+
+router.post('/cart', VerifyUser, cartController.addToCart);
+router.get('/cart/:shopId', VerifyUser, cartController.getCartByShop)
 router.put("/cart/increase/:id", cartController.increaseCartQty);
-router.put("/cart/decrease/:id",  cartController.decreaseCartQty);
+router.put("/cart/decrease/:id", cartController.decreaseCartQty);
 
 // router.get('/cart/:shopId', cartController.getCart);
 // router.delete('/cart/:shopId', cartController.clearCart);
 // router.post('/cart/placeorder', cartController.placeOrder);
- 
+
 module.exports = router;
