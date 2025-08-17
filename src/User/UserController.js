@@ -5,7 +5,7 @@ const { verifyOtp } = require('../Mail/VerifyOtpMail.js')
 const jwt = require("jsonwebtoken")
 const { sendOtpEmail } = require('../Mail/SendOtpEmail.js')
 
-  
+
 exports.createUser = async (req, res) => {
   try {
     const data = req.body;
@@ -194,15 +194,12 @@ exports.LoginUser = async (req, res) => {
 
     // ✅ Set cookie
     res.cookie("token", token, {
-      httpOnly: true,         // JS se access nahi
-      secure: true,           // HTTPS required (Vercel pe default hai)
-      sameSite: "none",       // Cross-domain ke liye
-      path: "/",              // Sab route pe available
-      maxAge: 24 * 60 * 60 * 1000, // 1 din
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production", // ✅ prod me true, local me false
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      path: "/",
+      maxAge: 24 * 60 * 60 * 1000
     });
-
-
-
 
 
     return res.status(200).json({
@@ -357,16 +354,14 @@ exports.LogoutUser = async (req, res) => {
   try {
     res.clearCookie("token", {
       httpOnly: true,
-      secure: true,     // HTTPS ke liye
-      sameSite: "none", // Cross-domain ke liye
-      path: "/",        // Login jaisa hi
+      secure: process.env.NODE_ENV === "production", // ✅ prod me true, local me false
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      path: "/",   // ✅ login ke time jaisa hi
     });
-
 
     return res.status(200).json({ msg: "Logout successful" });
   } catch (err) {
-    console.error(err);
+    console.error("Logout error:", err);
     res.status(500).json({ msg: "Logout failed" });
   }
 };
-
