@@ -125,7 +125,7 @@ exports.ROrder = async (req, res) => {
     } = req.body;
 
 
-    const userId = req.userId ;
+    const userId = req.userId;
     console.log(userId);
     if (!userId) {
       return res.status(401).json({
@@ -137,10 +137,20 @@ exports.ROrder = async (req, res) => {
     // 🔄 Validate item stocks before placing the order
     for (const item of items) {
       const product = await Product.findById(item.productId);
-      if (!product || product.isOutOfStock || product.inStock < item.quantity) {
+
+      // check karo product exist karta hai ya nahi
+      if (!product) {
         return res.status(400).json({
           success: false,
-          message: `${item.name} is out of stock or doesn't have enough quantity`,
+          message: `${item.name} not found`,
+        });
+      }
+
+      // bas true/false check karo
+      if (!product.inStock) {
+        return res.status(400).json({
+          success: false,
+          message: `${item.name} is out of stock`,
         });
       }
     }
