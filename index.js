@@ -14,8 +14,8 @@ const app = express();
 
 // CORS Setup
 app.use(cors({
-    origin: ["https://ashu-fronted.vercel.app"], // array bhi chalega
-    credentials: true                            // cookies allow
+    origin: true,  // frontend jo bhi origin hoga, wahi allow ho jaayega
+    credentials: true
 }));
 
 
