@@ -36,9 +36,13 @@ app.use('/api/user', userRoutes);
 app.use('/api/search', SearchRoutes);
 
 // MongoDB Connection
-mongoose.connect(process.env.MONGODB_URL)
+mongoose.connect(process.env.MONGODB_URL, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+})
     .then(() => console.log('✅ MongoDB Connected'))
     .catch(err => console.error('❌ MongoDB Connection Error:', err));
+
 
 // 👇 Ye change important hai — app.listen hata ke export karo
 module.exports = app;
