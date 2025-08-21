@@ -18,7 +18,6 @@ app.use(cors({
     credentials: true
 }));
 
-
 app.use(express.json());
 app.use(cookieParser());
 
@@ -43,6 +42,8 @@ mongoose.connect(process.env.MONGODB_URL, {
     .then(() => console.log('✅ MongoDB Connected'))
     .catch(err => console.error('❌ MongoDB Connection Error:', err));
 
-
-// 👇 Ye change important hai — app.listen hata ke export karo
-module.exports = app;
+// 👇 Important for Railway (PORT env var use karo)
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+    console.log(`🚀 Server running on port ${PORT}`);
+});
