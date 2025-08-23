@@ -14,9 +14,9 @@ const app = express();
 
 // CORS Setup
 app.use(cors({
-    origin: true,  // frontend jo bhi origin hoga, wahi allow ho jaayega
+    origin: 'https://packzo.in',  // Sirf yeh origin allow hoga
     credentials: true
-}));
+}))
 
 app.use(express.json());
 app.use(cookieParser());
