@@ -152,11 +152,11 @@ exports.loginSeller = async (req, res) => {
 
     // ✅ Save token in HTTP-only cookie
     res.cookie("Sellertoken", token, {
-      httpOnly: true,       // JS can't access
-      secure: true,        // Localhost/IP testing
-      sameSite: "Lax",      // Local me better
-      path: "/",            // All routes
-      maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+      httpOnly: true,      
+      secure: true,        
+      sameSite: "None",      
+      path: "/",            
+      maxAge: 7 * 24 * 60 * 60 * 1000 
     });
 
 

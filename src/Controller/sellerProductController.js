@@ -24,8 +24,8 @@ exports.updateProfile = async (req, res) => {
 exports.logout = (req, res) => {
   res.clearCookie("Sellertoken", {
     httpOnly: true,
-    secure: false, // ✅ Localhost/IP testing me false rakho
-    sameSite: "lax" // Local testing me lax better hai
+    secure: true, // ✅ Localhost/IP testing me false rakho
+    sameSite: "None" // Local testing me lax better hai
   });
 
   res.status(200).json({ message: 'Logged out successfully' });

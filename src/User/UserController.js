@@ -196,7 +196,7 @@ exports.LoginUser = async (req, res) => {
     res.cookie("token", token, {
       httpOnly: true,
       secure: true,  // iOS ke liye always true
-      sameSite: "Lax", // cross-site ke liye required
+      sameSite: "None", // cross-site ke liye required
       path: "/",
       maxAge: 24 * 60 * 60 * 1000
     });
@@ -355,7 +355,7 @@ exports.LogoutUser = async (req, res) => {
     res.clearCookie("token", {
       httpOnly: true,
       secure: true,           // 👈 same as login
-      sameSite: "Lax",       // 👈 same as login
+      sameSite: "None",       // 👈 same as login
       path: "/"               // 👈 same as login
     });
 
