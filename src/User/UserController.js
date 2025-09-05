@@ -195,12 +195,11 @@ exports.LoginUser = async (req, res) => {
     // ✅ Set cookie
     res.cookie("token", token, {
       httpOnly: true,
-      secure: true,  // iOS ke liye always true
-      sameSite: "None", // cross-site ke liye required
+      secure: process.env.NODE_ENV === "production", // ✅ prod me true, local me false
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
       path: "/",
       maxAge: 24 * 60 * 60 * 1000
     });
-
 
     return res.status(200).json({
       msg: 'Login successful',
@@ -354,15 +353,16 @@ exports.LogoutUser = async (req, res) => {
   try {
     res.clearCookie("token", {
       httpOnly: true,
-      secure: true,           // 👈 same as login
-      sameSite: "None",       // 👈 same as login
-      path: "/"               // 👈 same as login
+      secure: process.env.NODE_ENV === "production", // ✅ prod me true, local me false
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      path: "/", // ✅ login ke time jaisa hi
     });
 
 
-    return res.status(200).json({ msg: "Logout successful" });
-  } catch (err) {
-    console.error("Logout error:", err);
-    res.status(500).json({ msg: "Logout failed" });
-  }
-};
+      return res.status(200).json({ msg: "Logout successful" });
+    } catch (err) {
+      console.error("Logout error:", err);
+      res.status(500).json({ msg: "Logout failed" });
+    }
+  };
+  
