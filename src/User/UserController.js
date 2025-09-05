@@ -195,8 +195,8 @@ exports.LoginUser = async (req, res) => {
     // ✅ Set cookie
     res.cookie("token", token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production", // ✅ prod me true, local me false
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      secure: true,  // iOS ke liye always true
+      sameSite: "Lax", // cross-site ke liye required
       path: "/",
       maxAge: 24 * 60 * 60 * 1000
     });
@@ -354,10 +354,11 @@ exports.LogoutUser = async (req, res) => {
   try {
     res.clearCookie("token", {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production", // ✅ prod me true, local me false
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-      path: "/",   // ✅ login ke time jaisa hi
+      secure: true,           // 👈 same as login
+      sameSite: "Lax",       // 👈 same as login
+      path: "/"               // 👈 same as login
     });
+
 
     return res.status(200).json({ msg: "Logout successful" });
   } catch (err) {
