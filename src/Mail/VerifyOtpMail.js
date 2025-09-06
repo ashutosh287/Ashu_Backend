@@ -1,24 +1,19 @@
 const nodemailer = require("nodemailer");
-require('dotenv').config();
+require("dotenv").config();
 
+// ✅ Transporter (Simple Gmail setup)
 const transporter = nodemailer.createTransport({
     service: "gmail",
-    port: 465,
-    secure: true,
     auth: {
-        user: process.env.NodeMailerUser,
-        pass: process.env.NodeMailerPass,
+        user: process.env.NodeMailerUser,  // 👉 Gmail ID from .env
+        pass: process.env.NodeMailerPass,  // 👉 App Password from .env
     },
-    tls: {
-        rejectUnauthorized: false
-    }
 });
 
-
+// ✅ Verify OTP function
 exports.verifyOtp = async (name, email, randomOtp) => {
-
     const emailTemplate = {
-        from: '"Packzo" <your-email@gmail.com>',
+        from: `"Packzo" <${process.env.NodeMailerUser}>`, // ✅ dynamic from env
         to: email,
         subject: "Email Verification OTP - Packzo",
         html: `
@@ -55,10 +50,10 @@ exports.verifyOtp = async (name, email, randomOtp) => {
 
     try {
         const info = await transporter.sendMail(emailTemplate);
-        console.log(`Email sent successfully. Message ID: ${info.messageId}`);
+        console.log(`✅ Email sent successfully. Message ID: ${info.messageId}`);
         return { success: true, messageId: info.messageId };
     } catch (error) {
-        console.error("❌ Nodemailer Error:", error);
-        throw new Error("Failed to send OTP email");
+        console.error("❌ Nodemailer Error:", error.message);
+        return { success: false, error: error.message };
     }
 };

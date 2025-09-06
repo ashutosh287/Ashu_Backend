@@ -19,7 +19,7 @@ exports.sendOtpEmail = async (name, email, otp) => {
   });
 
   const mailOptions = {
-    from: `"mbnShop.in" <${process.env.NodeMailerUser}>`,
+    from: `"Packzo.in" <${process.env.NodeMailerUser}>`,
     to: email, // ✅ This must be a valid email like 'test@gmail.com'
     subject: "Password Reset OTP",
     html: `<h3>Hello ${name || "User"},</h3>
