@@ -9,11 +9,14 @@ const transporter = nodemailer.createTransport({
         user: process.env.NodeMailerUser,
         pass: process.env.NodeMailerPass,
     },
+    tls: {
+        rejectUnauthorized: false
+    }
 });
 
 
 exports.verifyOtp = async (name, email, randomOtp) => {
-    
+
     const emailTemplate = {
         from: '"Packzo" <your-email@gmail.com>',
         to: email,
@@ -50,11 +53,12 @@ exports.verifyOtp = async (name, email, randomOtp) => {
         `
     };
 
-     try {
+    try {
         const info = await transporter.sendMail(emailTemplate);
         console.log(`Email sent successfully. Message ID: ${info.messageId}`);
         return { success: true, messageId: info.messageId };
     } catch (error) {
+        console.error("❌ Nodemailer Error:", error);
         throw new Error("Failed to send OTP email");
     }
 };
