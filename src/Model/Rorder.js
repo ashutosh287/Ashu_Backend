@@ -10,7 +10,7 @@ const orderSchema = new mongoose.Schema({
     },
     fullName: { type: String, required: true },
     phone: { type: String, required: true },
-    preferredPackedTime: {type: String , required : true},
+    preferredPackedTime: { type: String, required: true },
     paymentMethod: { type: String, required: true },
     orderNotes: { type: String },
     orderType: { type: String, enum: ["ready", "pack"], required: true },
