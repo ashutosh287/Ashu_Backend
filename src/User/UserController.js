@@ -18,19 +18,16 @@ exports.createUser = async (req, res) => {
       return res.status(400).send({ status: false, msg: "Missing required fields: name, email, or password" });
 
     const randomOtp = Math.floor(1000 + Math.random() * 9000);
+
     const existingUser = await UserModel.findOne({ email });
 
     if (existingUser) {
-      const UserStatus = {
-        isAccountActive: existingUser.isAccountActive,
-        isVerify: existingUser.isVerify,
-        isdelete: existingUser.isdelete,
-      };
+      const { isAccountActive, isVerify, isdelete } = existingUser;
 
-      if (!UserStatus.isAccountActive)
-        return res.status(400).send({ status: false, msg: "Your Account Is Blocked", data: UserStatus });
+      if (!isAccountActive)
+        return res.status(400).send({ status: false, msg: "Your Account Is Blocked" });
 
-      if (UserStatus.isdelete) {
+      if (isdelete) {
         // Reactivate deleted account
         const hashedPassword = await bcrypt.hash(password, 10);
         existingUser.name = name;
@@ -46,7 +43,14 @@ exports.createUser = async (req, res) => {
         try {
           await verifyOtp(name, email, randomOtp);
         } catch (err) {
-          return res.status(500).send({ status: false, msg: "Failed to send OTP", error: err.message });
+          console.error("OTP send error:", err);
+          // Still allow account recreation even if OTP fails
+          return res.status(201).send({
+            status: true,
+            msg: "Account recreated, but OTP sending failed. Please contact support.",
+            email: existingUser.email,
+            id: existingUser._id,
+          });
         }
 
         return res.status(201).send({
@@ -57,15 +61,22 @@ exports.createUser = async (req, res) => {
         });
       }
 
-      if (UserStatus.isVerify)
-        return res.status(400).send({ status: false, msg: "Your account is verified, please login", data: UserStatus });
+      if (isVerify)
+        return res.status(400).send({ status: false, msg: "Your account is verified, please login" });
 
-      // Re-send OTP if already exists but not verified
-      await UserModel.findByIdAndUpdate(existingUser._id, { UserVerifyOtp: randomOtp });
+      // Re-send OTP for unverified user
+      existingUser.UserVerifyOtp = randomOtp;
+      await existingUser.save();
+
       try {
         await verifyOtp(name, email, randomOtp);
       } catch (err) {
-        return res.status(500).send({ status: false, msg: "Failed to send OTP", error: err.message });
+        console.error("OTP resend error:", err);
+        return res.status(200).send({
+          status: true,
+          msg: "OTP update succeeded, but sending failed. Contact support to verify.",
+          id: existingUser._id,
+        });
       }
 
       return res.status(200).send({ status: true, msg: "OTP Sent Successfully", id: existingUser._id });
@@ -77,13 +88,22 @@ exports.createUser = async (req, res) => {
     data.role = 'user';
     data.UserVerifyOtp = randomOtp;
 
+    let newUser;
     try {
       await verifyOtp(name, email, randomOtp);
+      newUser = await UserModel.create(data);
     } catch (err) {
-      return res.status(500).send({ status: false, msg: "Failed to send OTP", error: err.message });
+      console.error("OTP send failed during registration:", err);
+      // Still create user even if OTP fails
+      newUser = await UserModel.create(data);
+      return res.status(201).send({
+        status: true,
+        msg: "Registered successfully, but OTP sending failed. Contact support to verify.",
+        email: newUser.email,
+        id: newUser._id,
+      });
     }
 
-    const newUser = await UserModel.create(data);
     return res.status(201).send({
       status: true,
       msg: 'Successfully Registered. OTP sent.',
@@ -92,6 +112,7 @@ exports.createUser = async (req, res) => {
     });
 
   } catch (e) {
+    console.error("Create user error:", e);
     return res.status(500).send({ status: false, msg: e.message });
   }
 };

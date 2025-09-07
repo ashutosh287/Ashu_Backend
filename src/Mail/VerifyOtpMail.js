@@ -1,57 +1,41 @@
 const nodemailer = require("nodemailer");
-require('dotenv').config();
+require("dotenv").config();
 
+// ✅ Create transporter for Gmail
 const transporter = nodemailer.createTransport({
-    service: "gmail",
-    port: 465,
-    secure: true,
-    auth: {
-        user: process.env.NodeMailerUser,
-        pass: process.env.NodeMailerPass,
-    },
+  service: "gmail",
+  auth: {
+    user: process.env.NodeMailerUser, // Your Gmail
+    pass: process.env.NodeMailerPass, // App Password
+  },
+  tls: {
+    rejectUnauthorized: false, // Prevent certificate issues
+  },
 });
 
-exports.verifyOtp = async (name, email, randomOtp) => {
-    const emailTemplate = {
-        from: `"Packzo.in" <${process.env.NodeMailerUser}>`, // <-- use authenticated user
-        to: email,
-        subject: "Email Verification OTP - Packzo.in",
-        html: ` <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-                <div style="background-color: #16253D; padding: 30px; border-radius: 10px;">
-                    <h1 style="color: #FF4500; margin: 0; padding-bottom: 20px;">Packzo.in</h1>
-                        
-                    <div style="background-color: #ffffff; padding: 30px; border-radius: 8px;">
-                        <h2 style="color: #16253D; margin-top: 0;">Verify Your Email</h2>
-                        <p style="color: #333333;">Hello ${name},</p>
-                        <p style="color: #333333;">Thank you for signing up with Packzo.in. To verify your email address, please use the following verification code:</p>
-                        
-                        <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0; text-align: center;">
-                            <span style="font-size: 32px; font-weight: bold; letter-spacing: 5px; color: #16253D;">${randomOtp}</span>
-                        </div>
-                        
-                        <p style="color: #333333; margin-bottom: 5px;"><strong>Important:</strong></p>
-                        <ul style="color: #333333;">
-                            <li>This verification code is valid for 5 minutes</li>
-                            <li>Do not share this code with anyone</li>
-                            <li>If you didn't create an account with Packzo.in, please ignore this email</li>
-                        </ul>
-                        
-                        <p style="color: #333333; margin-top: 20px;">Welcome aboard!<br>Team Packzo.in</p>
-                    </div>
-                    
-                    <div style="text-align: center; padding-top: 20px; color: #ffffff; font-size: 12px;">
-                        <p>This is an automated message, please do not reply to this email.</p>
-                    </div>
-                </div>
-            </div>` // (Keep as is)
-    };
+// ✅ Verify transporter connection (optional, helps debugging)
+transporter.verify(function (error, success) {
+  if (error) {
+    console.error("Nodemailer connection error:", error);
+  } else {
+    console.log("Nodemailer is ready to send emails");
+  }
+});
 
-    try {
-        const info = await transporter.sendMail(emailTemplate);
-        console.log(`Email sent successfully. Message ID: ${info.messageId}`);
-        return { success: true, messageId: info.messageId };
-    } catch (error) {
-        console.error("verifyOtp error:", error); // <-- log real error
-        throw new Error("Failed to send OTP email");
-    }
+exports.verifyOtp = async (name, email, otp) => {
+  const mailOptions = {
+    from: `"iShop" <${process.env.NodeMailerUser}>`,
+    to: email,
+    subject: "Your OTP Code",
+    text: `Hello ${name},\n\nYour OTP for iShop registration is: ${otp}\n\nDo not share this OTP with anyone.`,
+  };
+
+  try {
+    const info = await transporter.sendMail(mailOptions);
+    console.log(`OTP sent to ${email}: ${info.response}`);
+  } catch (err) {
+    console.error(`Failed to send OTP to ${email}:`, err);
+    // Throw the error so calling function can handle it
+    throw err;
+  }
 };
