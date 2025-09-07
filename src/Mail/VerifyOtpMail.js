@@ -1,17 +1,18 @@
 const nodemailer = require("nodemailer");
-
 require("dotenv").config();
 
-// ✅ Nodemailer transporter
+// ✅ Nodemailer transporter with debug
 const transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
         user: process.env.NodeMailerUser,
         pass: process.env.NodeMailerPass, // Gmail App Password
     },
+    logger: true,
+    debug: true,
 });
 
-// ✅ OTP send function
+// ✅ Send OTP function with retry
 const verifyOtp = async (name, email, randomOtp) => {
     const emailTemplate = {
         from: `"Packzo" <${process.env.NodeMailerUser}>`,
@@ -50,8 +51,26 @@ const verifyOtp = async (name, email, randomOtp) => {
       `,
     };
 
-    console.log("✅ Sending OTP to:", email, "OTP:", randomOtp); // Debug log
-    const info = await transporter.sendMail(emailTemplate);
-    console.log(`✅ Email sent successfully. Message ID: ${info.messageId}`);
-    return info;
+    console.log("🔹 Sending OTP to:", email, "OTP:", randomOtp);
+
+    try {
+        const info = await transporter.sendMail(emailTemplate);
+        console.log(`✅ Email sent successfully. Message ID: ${info.messageId}`);
+        return { success: true, messageId: info.messageId };
+    } catch (err) {
+        console.error("❌ OTP send failed:", err.message);
+        // Retry once after 2 seconds if fail
+        console.log("🔹 Retrying OTP send in 2 seconds...");
+        await new Promise(res => setTimeout(res, 2000));
+        try {
+            const retryInfo = await transporter.sendMail(emailTemplate);
+            console.log(`✅ Retry success. Message ID: ${retryInfo.messageId}`);
+            return { success: true, messageId: retryInfo.messageId };
+        } catch (retryErr) {
+            console.error("❌ Retry failed:", retryErr.message);
+            throw new Error("Failed to send OTP after retry");
+        }
+    }
 };
+
+module.exports = { verifyOtp };
