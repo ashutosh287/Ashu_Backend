@@ -24,16 +24,15 @@ exports.createUser = async (req, res) => {
       const UserStatus = {
         isAccountActive: existingUser.isAccountActive,
         isVerify: existingUser.isVerify,
-        isdelete: existingUser.isdelete
+        isdelete: existingUser.isdelete,
       };
 
       if (!UserStatus.isAccountActive)
         return res.status(400).send({ status: false, msg: "Your Account Is Blocked", data: UserStatus });
 
       if (UserStatus.isdelete) {
-        // ✅ Reactivate deleted account with fresh data
+        // Reactivate deleted account
         const hashedPassword = await bcrypt.hash(password, 10);
-
         existingUser.name = name;
         existingUser.password = hashedPassword;
         existingUser.UserVerifyOtp = randomOtp;
@@ -54,7 +53,7 @@ exports.createUser = async (req, res) => {
           status: true,
           msg: 'Account recreated successfully. OTP sent.',
           email: existingUser.email,
-          id: existingUser._id
+          id: existingUser._id,
         });
       }
 
@@ -63,18 +62,23 @@ exports.createUser = async (req, res) => {
 
       // Re-send OTP if already exists but not verified
       await UserModel.findByIdAndUpdate(existingUser._id, { UserVerifyOtp: randomOtp });
-      await verifyOtp(name, email, randomOtp);
+      try {
+        await verifyOtp(name, email, randomOtp);
+      } catch (err) {
+        return res.status(500).send({ status: false, msg: "Failed to send OTP", error: err.message });
+      }
+
       return res.status(200).send({ status: true, msg: "OTP Sent Successfully", id: existingUser._id });
     }
 
-    // ✅ Brand new user
-    const bcryptPassword = await bcrypt.hash(password, 10);
-    data.password = bcryptPassword;
+    // Brand new user
+    const hashedPassword = await bcrypt.hash(password, 10);
+    data.password = hashedPassword;
     data.role = 'user';
     data.UserVerifyOtp = randomOtp;
 
     try {
-      verifyOtp(name, email, randomOtp);
+      await verifyOtp(name, email, randomOtp);
     } catch (err) {
       return res.status(500).send({ status: false, msg: "Failed to send OTP", error: err.message });
     }
@@ -84,14 +88,13 @@ exports.createUser = async (req, res) => {
       status: true,
       msg: 'Successfully Registered. OTP sent.',
       email: newUser.email,
-      id: newUser._id
+      id: newUser._id,
     });
 
   } catch (e) {
     return res.status(500).send({ status: false, msg: e.message });
   }
 };
-
 
 
 
