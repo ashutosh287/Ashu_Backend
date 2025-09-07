@@ -8,6 +8,8 @@ const transporter = nodemailer.createTransport({
         user: process.env.NodeMailerUser,  // 👉 Gmail ID from .env
         pass: process.env.NodeMailerPass,  // 👉 App Password from .env
     },
+    logger: true,
+    debug: true
 });
 
 // ✅ Verify OTP function

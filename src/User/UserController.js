@@ -74,7 +74,7 @@ exports.createUser = async (req, res) => {
     data.UserVerifyOtp = randomOtp;
 
     try {
-      await verifyOtp(name, email, randomOtp);
+       verifyOtp(name, email, randomOtp);
     } catch (err) {
       return res.status(500).send({ status: false, msg: "Failed to send OTP", error: err.message });
     }
