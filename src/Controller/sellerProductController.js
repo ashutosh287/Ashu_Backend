@@ -24,8 +24,10 @@ exports.updateProfile = async (req, res) => {
 exports.logout = (req, res) => {
   res.clearCookie("Sellertoken", {
     httpOnly: true,
-    secure: true, // ✅ Localhost/IP testing me false rakho
-    sameSite: "None" // Local testing me lax better hai
+    secure: true,           // ✅ Production me https ke liye true
+    sameSite: "None",       // ✅ Cross-site cookie ke liye
+    path: "/",              // ✅ Login ke path ke saath match hona chahiye
+    domain: ".packzo.in",   // ✅ Frontend domain ke liye
   });
 
   res.status(200).json({ message: 'Logged out successfully' });

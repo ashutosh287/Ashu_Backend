@@ -74,7 +74,7 @@ exports.createUser = async (req, res) => {
     data.UserVerifyOtp = randomOtp;
 
     try {
-       verifyOtp(name, email, randomOtp);
+      verifyOtp(name, email, randomOtp);
     } catch (err) {
       return res.status(500).send({ status: false, msg: "Failed to send OTP", error: err.message });
     }
@@ -193,13 +193,17 @@ exports.LoginUser = async (req, res) => {
     );
 
     // ✅ Set cookie
+    // Backend login route
     res.cookie("token", token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production", // ✅ prod me true, local me false
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      httpOnly: true,                        // JS cannot access cookie
+      secure: true,                          // HTTPS only
+      sameSite: "none",                       // Cross-site (iOS + Safari compatible)
+      domain: ".packzo.in",                  // Make sure frontend domain is correct
       path: "/",
-      maxAge: 24 * 60 * 60 * 1000
+      maxAge: 24 * 60 * 60 * 1000,          // 1 day
     });
+
+
 
     return res.status(200).json({
       msg: 'Login successful',
@@ -353,16 +357,16 @@ exports.LogoutUser = async (req, res) => {
   try {
     res.clearCookie("token", {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production", // ✅ prod me true, local me false
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-      path: "/", // ✅ login ke time jaisa hi
+      secure: true,                 // since frontend HTTPS
+      sameSite: "none",             // cross-site
+      domain: ".packzo.in",         // same as login
+      path: "/",                    // same path as login
     });
 
 
-      return res.status(200).json({ msg: "Logout successful" });
-    } catch (err) {
-      console.error("Logout error:", err);
-      res.status(500).json({ msg: "Logout failed" });
-    }
-  };
-  
+    return res.status(200).json({ msg: "Logout successful" });
+  } catch (err) {
+    console.error("Logout error:", err);
+    res.status(500).json({ msg: "Logout failed" });
+  }
+};

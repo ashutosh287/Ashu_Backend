@@ -151,12 +151,12 @@ exports.loginSeller = async (req, res) => {
     const token = generateToken(existingSeller._id);
 
     // ✅ Save token in HTTP-only cookie
-    res.cookie("Sellertoken", token, {
-      httpOnly: true,      
-      secure: true,        
-      sameSite: "None",      
-      path: "/",            
-      maxAge: 7 * 24 * 60 * 60 * 1000 
+    res.clearCookie("Sellertoken", {
+      httpOnly: true,
+      secure: true,
+      sameSite: "None",
+      domain: ".packzo.in",  // same as login cookie
+      path: "/",
     });
 
 
