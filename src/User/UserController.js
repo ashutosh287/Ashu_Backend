@@ -157,12 +157,19 @@ exports.LoginUser = async (req, res) => {
       return res.status(404).json({ msg: 'No account found' });
     }
 
+    // ✅ Account verification check
+    if (!user.isVerify) {
+      return res.status(403).json({ msg: 'Please verify your account via signup OTP.' });
+    }
+
+    // ✅ Account lock check
     if (user.isLocked()) {
       return res.status(403).json({
         msg: `Too many failed attempts. Please try again after ${Math.ceil((user.lockUntil - Date.now()) / 60000)} minutes.`,
       });
     }
 
+    // ✅ Password check
     const isMatch = await bcrypt.compare(password, user.password);
 
     if (!isMatch) {
@@ -193,16 +200,13 @@ exports.LoginUser = async (req, res) => {
     );
 
     // ✅ Set cookie
-    // Backend login route
     res.cookie("token", token, {
-      httpOnly: true,                        // JS cannot access cookie
-      secure: true,                          // HTTPS only
-      sameSite: "none",                       // Cross-site (iOS + Safari compatible)
+      httpOnly: true,  // JS cannot access cookie
+      secure: true,    // HTTPS only
+      sameSite: "none",
       path: "/",
-      maxAge: 24 * 60 * 60 * 1000,          // 1 day
+      maxAge: 24 * 60 * 60 * 1000,  // 1 day
     });
-
-
 
     return res.status(200).json({
       msg: 'Login successful',
