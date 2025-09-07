@@ -8,55 +8,43 @@ const Product = require('../Model/Product.js');
 exports.addToCart = async (req, res) => {
   try {
     const { productId, shopId, name, image, price, quantity } = req.body;
-    const userId = req.userId; // ✅ from VerifyUser middleware
 
     if (!productId || !shopId || !name) {
-      return res.status(400).json({ message: "Required fields missing" });
-    }
-
-    // ✅ Check if product already exists in user's cart
-    const existingItem = await Cart.findOne({ userId, productId, shopId });
-    if (existingItem) {
-      existingItem.quantity += quantity || 1;
-      await existingItem.save();
-      return res.status(200).json({ message: "Quantity updated", cart: existingItem });
+      return res.status(400).json({ message: 'Required fields missing' });
     }
 
     const newItem = new Cart({
-      userId,
       productId,
       shopId,
-      name, 
+      name,
       image,
       price,
-      quantity: quantity || 1,
+      quantity: quantity || 1
     });
 
     await newItem.save();
-    res.status(201).json({ message: "Added to cart", cart: newItem });
+    res.status(201).json({ message: 'Added to cart', cart: newItem });
   } catch (err) {
-    console.error("❌ Error in addToCart:", err);
-    res.status(500).json({ message: "Server error", error: err.message });
+    console.error('❌ Error in addToCart:', err);
+    res.status(500).json({ message: 'Server error', error: err.message });
   }
 };
 
-// 🛒 Get Cart by Shop (for a user)
 exports.getCartByShop = async (req, res) => {
   const { shopId } = req.params;
-  const userId = req.userId;
 
   if (!shopId || !mongoose.Types.ObjectId.isValid(shopId)) {
-    return res.status(400).json({ message: "Invalid or missing shopId" });
+    return res.status(400).json({ message: 'Invalid or missing shopId' });
   }
 
   try {
-    const cart = await Cart.find({ shopId, userId });
+    const cart = await Cart.find({ shopId });
 
     const updatedCart = await Promise.all(
       cart.map(async (item) => {
         const product = await Product.findById(item.productId);
 
-        const isOutOfStock = !product || product.inStock === false;
+        const isOutOfStock = !product || product.inStock === false; // ✅ Boolean check
         const isUnpublished = !product || product.isPublished === false;
 
         return {
@@ -69,55 +57,55 @@ exports.getCartByShop = async (req, res) => {
 
     res.status(200).json(updatedCart);
   } catch (err) {
-    console.error("❌ Error fetching cart:", err);
-    res.status(500).json({ message: "Error fetching cart", error: err.message });
+    console.error('❌ Error fetching cart:', err);
+    res.status(500).json({ message: 'Error fetching cart', error: err.message });
   }
 };
 
-// ⬆️ Increase Quantity
+
 exports.increaseCartQty = async (req, res) => {
   const { id } = req.params;
-  const userId = req.userId;
-
   try {
-    const item = await Cart.findOne({ _id: id, userId });
+    const item = await Cart.findById(id);
     if (!item) return res.status(404).json({ message: "Item not found" });
 
     item.quantity += 1;
     await item.save();
-    res.json({ message: "Quantity increased", item });
+    res.json({ message: "Quantity increased" });
   } catch (err) {
     res.status(500).json({ message: "Server error", error: err.message });
   }
 };
 
-// ⬇️ Decrease Quantity or Remove
 exports.decreaseCartQty = async (req, res) => {
   const { id } = req.params;
-  const { removeDirectly } = req.query;
-  const userId = req.userId;
+  const { removeDirectly } = req.query; // e.g. /decrease/:id?removeDirectly=true
 
   try {
-    const item = await Cart.findOne({ _id: id, userId });
+    const item = await Cart.findById(id);
     if (!item) return res.status(404).json({ message: "Item not found" });
 
-    if (removeDirectly === "true") {
+    // ✅ If user wants to directly remove the item
+    if (removeDirectly === 'true') {
       await Cart.findByIdAndDelete(id);
       return res.json({ message: "Item removed from cart" });
     }
 
+    // ✅ Decrease logic
     if (item.quantity > 1) {
       item.quantity -= 1;
       await item.save();
-      res.json({ message: "Quantity decreased", item });
+      res.json({ message: "Quantity decreased" });
     } else {
       await Cart.findByIdAndDelete(id);
       res.json({ message: "Item removed from cart" });
     }
+
   } catch (err) {
     res.status(500).json({ message: "Server error", error: err.message });
   }
 };
+
 
 
 
