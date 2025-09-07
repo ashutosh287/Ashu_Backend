@@ -11,12 +11,10 @@ const transporter = nodemailer.createTransport({
     },
 });
 
-
-
 exports.verifyOtp = async (name, email, randomOtp) => {
-    
+
     const emailTemplate = {
-        from: '"Packzo.in" <your-email@gmail.com>',
+        from: `"Packzo.in" <${process.env.NodeMailerUser}>`,
         to: email,
         subject: "Email Verification OTP - Packzo.in",
         html: `
@@ -51,7 +49,7 @@ exports.verifyOtp = async (name, email, randomOtp) => {
         `
     };
 
-     try {
+    try {
         const info = await transporter.sendMail(emailTemplate);
         console.log(`Email sent successfully. Message ID: ${info.messageId}`);
         return { success: true, messageId: info.messageId };
