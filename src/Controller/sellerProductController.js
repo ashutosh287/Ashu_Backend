@@ -27,7 +27,6 @@ exports.logout = (req, res) => {
     secure: true,           // ✅ Production me https ke liye true
     sameSite: "None",       // ✅ Cross-site cookie ke liye
     path: "/",              // ✅ Login ke path ke saath match hona chahiye
-    domain: ".packzo.in",   // ✅ Frontend domain ke liye
   });
 
   res.status(200).json({ message: 'Logged out successfully' });

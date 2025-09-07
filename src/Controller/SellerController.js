@@ -155,7 +155,6 @@ exports.loginSeller = async (req, res) => {
       httpOnly: true,
       secure: true,
       sameSite: "None",
-      domain: ".packzo.in",  // same as login cookie
       path: "/",
     });
 

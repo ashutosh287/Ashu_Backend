@@ -198,7 +198,6 @@ exports.LoginUser = async (req, res) => {
       httpOnly: true,                        // JS cannot access cookie
       secure: true,                          // HTTPS only
       sameSite: "none",                       // Cross-site (iOS + Safari compatible)
-      domain: ".packzo.in",                  // Make sure frontend domain is correct
       path: "/",
       maxAge: 24 * 60 * 60 * 1000,          // 1 day
     });
@@ -359,7 +358,6 @@ exports.LogoutUser = async (req, res) => {
       httpOnly: true,
       secure: true,                 // since frontend HTTPS
       sameSite: "none",             // cross-site
-      domain: ".packzo.in",         // same as login
       path: "/",                    // same path as login
     });
 
