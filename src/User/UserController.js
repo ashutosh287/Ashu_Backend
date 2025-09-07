@@ -5,7 +5,6 @@ const { verifyOtp } = require('../Mail/VerifyOtpMail.js')
 const jwt = require("jsonwebtoken")
 const { sendOtpEmail } = require('../Mail/SendOtpEmail.js')
 
-
 exports.createUser = async (req, res) => {
   try {
     const data = req.body;
@@ -19,103 +18,59 @@ exports.createUser = async (req, res) => {
 
     const randomOtp = Math.floor(1000 + Math.random() * 9000);
 
-    const existingUser = await UserModel.findOne({ email });
+    const checkMail = await UserModel.findOneAndUpdate(
+      { email },
+      { $set: { UserVerifyOtp: randomOtp } },
+      { new: true }
+    );
 
-    if (existingUser) {
-      const { isAccountActive, isVerify, isdelete } = existingUser;
+    if (checkMail) {
+      const UserStatus = {
+        isAccountActive: checkMail.isAccountActive,
+        isVerify: checkMail.isVerify,
+        isdelete: checkMail.isdelete
+      };
 
-      if (!isAccountActive)
-        return res.status(400).send({ status: false, msg: "Your Account Is Blocked" });
+      if (!UserStatus.isAccountActive)
+        return res.status(400).send({ status: false, msg: "Your Account Is Blocked", data: UserStatus });
 
-      if (isdelete) {
-        // Reactivate deleted account
-        const hashedPassword = await bcrypt.hash(password, 10);
-        existingUser.name = name;
-        existingUser.password = hashedPassword;
-        existingUser.UserVerifyOtp = randomOtp;
-        existingUser.isdelete = false;
-        existingUser.isVerify = false;
-        existingUser.archived = false;
-        existingUser.archivedAt = null;
+      if (UserStatus.isdelete)
+        return res.status(400).send({ status: false, msg: "Your Account Is Deleted", data: UserStatus });
 
-        await existingUser.save();
+      if (UserStatus.isVerify)
+        return res.status(400).send({ status: false, msg: "Your account is verified, please login", data: UserStatus });
 
-        try {
-          await verifyOtp(name, email, randomOtp);
-        } catch (err) {
-          console.error("OTP send error:", err);
-          // Still allow account recreation even if OTP fails
-          return res.status(201).send({
-            status: true,
-            msg: "Account recreated, but OTP sending failed. Please contact support.",
-            email: existingUser.email,
-            id: existingUser._id,
-          });
-        }
-
-        return res.status(201).send({
-          status: true,
-          msg: 'Account recreated successfully. OTP sent.',
-          email: existingUser.email,
-          id: existingUser._id,
-        });
-      }
-
-      if (isVerify)
-        return res.status(400).send({ status: false, msg: "Your account is verified, please login" });
-
-      // Re-send OTP for unverified user
-      existingUser.UserVerifyOtp = randomOtp;
-      await existingUser.save();
-
-      try {
-        await verifyOtp(name, email, randomOtp);
-      } catch (err) {
-        console.error("OTP resend error:", err);
-        return res.status(200).send({
-          status: true,
-          msg: "OTP update succeeded, but sending failed. Contact support to verify.",
-          id: existingUser._id,
-        });
-      }
-
-      return res.status(200).send({ status: true, msg: "OTP Sent Successfully", id: existingUser._id });
+      await verifyOtp(name, email, randomOtp);
+      return res.status(200).send({ status: true, msg: "OTP Sent Successfully", id: checkMail._id });
     }
 
-    // Brand new user
-    const hashedPassword = await bcrypt.hash(password, 10);
-    data.password = hashedPassword;
+    const bcryptPassword = await bcrypt.hash(password, 10);
+    data.password = bcryptPassword;
     data.role = 'user';
     data.UserVerifyOtp = randomOtp;
 
-    let newUser;
     try {
       await verifyOtp(name, email, randomOtp);
-      newUser = await UserModel.create(data);
     } catch (err) {
-      console.error("OTP send failed during registration:", err);
-      // Still create user even if OTP fails
-      newUser = await UserModel.create(data);
-      return res.status(201).send({
-        status: true,
-        msg: "Registered successfully, but OTP sending failed. Contact support to verify.",
-        email: newUser.email,
-        id: newUser._id,
-      });
+      return res.status(500).send({ status: false, msg: "Failed to send OTP", error: err.message });
     }
 
-    return res.status(201).send({
-      status: true,
-      msg: 'Successfully Registered. OTP sent.',
-      email: newUser.email,
-      id: newUser._id,
-    });
-
+    try {
+      const UserData = await UserModel.create(data);
+      return res.status(201).send({
+        status: true,
+        msg: 'Successfully Registered',
+        email: UserData.email,
+        id: UserData._id
+      });
+    } catch (err) {
+      return res.status(500).send({ status: false, msg: "Failed to create user", error: err.message });
+    }
   } catch (e) {
-    console.error("Create user error:", e);
     return res.status(500).send({ status: false, msg: e.message });
   }
 };
+
 
 
 
