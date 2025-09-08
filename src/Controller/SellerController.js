@@ -151,17 +151,13 @@ exports.loginSeller = async (req, res) => {
     const token = generateToken(existingSeller._id);
 
     // ✅ Save token in HTTP-only cookie
-    res.clearCookie("Sellertoken", {
-      httpOnly: true,
-      secure: true,
-      sameSite: "None",
+    res.cookie("Sellertoken", token, {
+      httpOnly: true,  // JS cannot access cookie
+      secure: true,    // HTTPS only
+      sameSite: "none",
       path: "/",
+      maxAge: 24 * 60 * 60 * 1000,  // 1 day
     });
-
-
-
-
-
 
     res.status(200).json({
       seller: {
