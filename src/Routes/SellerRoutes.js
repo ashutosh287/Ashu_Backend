@@ -23,7 +23,7 @@ router.put('/product/:id', VerifySeller, upload.single("image"), sellerProductCt
 router.delete('/product/:id', VerifySeller, sellerProductCtrl.deleteProduct);
 router.patch('/product/:id/toggle-publish', VerifySeller, sellerProductCtrl.togglePublish);
 
-router.get('/orders', VerifySeller, OrderCtrl.getMyOrders);
+router.get('/orders/:id', VerifySeller, OrderCtrl.getMyOrders);
 router.get('/readyOrder/:id', VerifySeller, OrderCtrl.getMyReadyOrders);
 router.put('/readyOrder/:id', VerifySeller, OrderCtrl.updateReadyOrderStatus);
 router.put('/order-status/:id', VerifySeller, OrderCtrl.updateOrderStatus);
