@@ -5,33 +5,9 @@ const mongoose = require('mongoose');
 
 
 
-const calculateDeliveryCharges = require("../Utils/DeliveryCharges.js"); // 👈 area wise delivery charges
-
 exports.placeOrder = async (req, res) => {
   try {
     const {
-      shopId,
-      buyerName,
-      address,  // 👈 isme area name aayega (madhuban, colony, etc.)
-      phone,
-      items,
-      preferredDeliveryTime,
-      paymentMethod,
-      orderNotes
-    } = req.body;
-
-    // 🟢 1. Products total
-    const productsTotal = items.reduce((sum, i) => sum + i.price * i.quantity, 0);
-
-    // 🟢 2. Delivery charge by area
-    const deliveryCharge = calculateDeliveryCharges(address);
-
-    // 🟢 3. Final total (customer payment)
-    const totalAmount = productsTotal + deliveryCharge;
-
-    // 🟢 4. Save order
-    const newOrder = new Order({
-      userId: req.userId, // from verifyUser middleware
       shopId,
       buyerName,
       address,
@@ -40,24 +16,35 @@ exports.placeOrder = async (req, res) => {
       preferredDeliveryTime,
       paymentMethod,
       orderNotes,
-      productsTotal,   // ✅ seller revenue
-      deliveryCharge,  // ✅ only for admin
-      totalAmount,      // ✅ customer payment
-      status: "Pending",
+      totalAmount
+    } = req.body;
+
+    // ✅ Use req.userId directly, set by verifyUser middleware
+    const newOrder = new Order({
+      userId: req.userId, // ✅ FIXED LINE
+      shopId,
+      buyerName,
+      address,
+      phone,
+      items,
+      preferredDeliveryTime,
+      paymentMethod,
+      orderNotes,
+      totalAmount,
+      status: "Pending"
     });
 
     await newOrder.save();
 
     res.status(201).json({
-      message: "✅ Order placed successfully",
-      order: newOrder,
+      message: '✅ Order placed successfully',
+      order: newOrder
     });
   } catch (err) {
-    console.error("❌ Place order failed:", err);
-    res.status(500).json({ message: "Failed to place order." });
+    console.error('❌ Place order failed:', err);
+    res.status(500).json({ message: 'Failed to place order.' });
   }
 };
-
 
 
 

@@ -1,21 +1,19 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose')
 
 const orderSchema = new mongoose.Schema({
-  shopId: { type: mongoose.Schema.Types.ObjectId, required: true, ref: "Shop" },
   userId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
+    ref: 'User',
+    required: true, // ✅ Required so it's always saved
+  },
+  shopId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Shop',
     required: true,
   },
-  fullName: { type: String, required: true },
-  phone: { type: String, required: true },
-  address: { type: String, required: true },
-
-  preferredPackedTime: { type: String, required: true },
-  paymentMethod: { type: String, required: true },
-  orderNotes: { type: String },
-  orderType: { type: String, enum: ["ready", "pack"], required: true },
-
+  buyerName: String,
+  address: String,
+  phone: String,
   items: [
     {
       productId: mongoose.Schema.Types.ObjectId,
@@ -24,19 +22,18 @@ const orderSchema = new mongoose.Schema({
       quantity: Number,
     },
   ],
-
-  // ✅ New fields for totals
-  productsTotal: { type: Number, required: true },   // sirf products ka total (seller revenue)
-  deliveryCharge: { type: Number, required: true },  // delivery charges (sirf admin ke liye)
-  totalAmount: { type: Number, required: true },      // productsTotal + deliveryCharge (customer payment)
-
-  status: { type: String, default: "Pending" },
-  placedAt: { type: Date, default: Date.now },
-
-  pickupCode: {
+  preferredDeliveryTime: String,
+  paymentMethod: String,
+  orderNotes: String,
+  totalAmount: String,
+  status: {
     type: String,
-    required: true,
+    default: 'Pending',
+  },
+  placedAt: {
+    type: Date,
+    default: Date.now,
   },
 });
 
-module.exports = mongoose.model("orders", orderSchema);
+module.exports = mongoose.model('orders', orderSchema  );
