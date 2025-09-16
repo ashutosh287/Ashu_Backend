@@ -189,16 +189,29 @@ exports.updateOrderStatus = async (req, res) => {
     const { id } = req.params;
     const { status } = req.body;
 
+    // Only allow these statuses
+    const validStatuses = ['Pending', 'Delivered', 'Cancelled'];
+
+    if (!validStatuses.includes(status)) {
+      return res.status(400).json({ message: 'Invalid status value' });
+    }
+
     const order = await Order.findByIdAndUpdate(id, { status }, { new: true });
 
-    if (!order) return res.status(404).json({ error: "Order not found" });
+    if (!order) {
+      return res.status(404).json({ message: 'Order not found' });
+    }
 
-    res.json({ message: "Status updated", order });
+    res.status(200).json({
+      message: 'Order status updated successfully',
+      order
+    });
   } catch (err) {
-    console.error("Error updating order status:", err);
-    res.status(500).json({ error: "Failed to update order status" });
+    console.error('❌ Failed to update order status:', err);
+    res.status(500).json({ message: 'Failed to update order status' });
   }
 };
+
 
 
 
