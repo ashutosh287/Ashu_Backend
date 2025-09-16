@@ -19,17 +19,23 @@ exports.placeOrder = async (req, res) => {
       orderNotes,
     } = req.body;
 
+    // ✅ Validate items array
+    if (!items || !Array.isArray(items) || items.length === 0) {
+      return res.status(400).json({ message: "Cart is empty" });
+    }
+
+    // ✅ Products total
     const productsTotal = items.reduce((sum, i) => sum + i.price * i.quantity, 0);
 
-    // 🟢 Delivery charges (by address/area)
-    const deliveryCharge = calculateDeliveryCharges(address);
+    // ✅ Delivery charge using area
+    const deliveryCharge = calculateDeliveryCharges(area);
 
-    // 🟢 Final total
+    // ✅ Final total
     const totalAmount = productsTotal + deliveryCharge;
 
-    // ✅ Use req.userId from verifyUser middleware
+    // ✅ Create order
     const newOrder = new Order({
-      userId: req.userId,
+      userId: req.userId,       // set by verifyUser middleware
       shopId,
       buyerName,
       address,
@@ -39,20 +45,24 @@ exports.placeOrder = async (req, res) => {
       preferredDeliveryTime,
       paymentMethod,
       orderNotes,
-      productsTotal,
-      deliveryCharge,
-      totalAmount,
-      status: "Pending",
+      productsTotal,            // seller revenue
+      deliveryCharge,           // admin delivery charge
+      totalAmount,              // user total
+      status: "Pending",        // default
+      // deliveryCode auto-generate from schema default
     });
 
+    // ✅ Save to MongoDB
     await newOrder.save();
 
+    // ✅ Send response
     res.status(201).json({
-      message: "Order placed successfully",
+      message: "✅ Order placed successfully",
       order: newOrder,
     });
+
   } catch (err) {
-    console.error("Place order failed:", err);
+    console.error("❌ Place order failed:", err);
     res.status(500).json({ message: "Failed to place order." });
   }
 };
