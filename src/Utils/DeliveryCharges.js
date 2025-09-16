@@ -1,4 +1,4 @@
-function calculateDeliveryCharges(areaName) {
+function calculateDeliveryCharges(area = "") {
   const charges = {
     madhuban: 20,
     colony: 20,
@@ -8,8 +8,6 @@ function calculateDeliveryCharges(areaName) {
     "arpana hospital": 50,
   };
 
-  const area = areaName.toLowerCase().trim();
-  return charges[area] || 0; // default 0 agar area na mile
+  const key = area.trim().toLowerCase(); // normalize string
+  return charges[key] || 0; // agar match nahi hua to 0
 }
-
-module.exports = calculateDeliveryCharges;
