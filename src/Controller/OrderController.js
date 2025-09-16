@@ -2,49 +2,64 @@ const Order = require('../Model/Order.js');
 const Product = require('../Model/Product.js');
 const Rorder = require('../Model/Rorder.js')
 const mongoose = require('mongoose');
+const calculateDeliveryCharges = require('../Utils/DeliveryCharges.js');
 
 
+  exports.placeOrder = async (req, res) => {
+    try {
+      const {
+        shopId,
+        buyerName,
+        address,
+        area,
+        phone,
+        items,
+        preferredDeliveryTime,
+        paymentMethod,
+        orderNotes,
+      } = req.body;
 
-exports.placeOrder = async (req, res) => {
-  try {
-    const {
-      shopId,
-      buyerName,
-      address,
-      phone,
-      items,
-      preferredDeliveryTime,
-      paymentMethod,
-      orderNotes,
-      totalAmount
-    } = req.body;
 
-    // ✅ Use req.userId directly, set by verifyUser middleware
-    const newOrder = new Order({
-      userId: req.userId, // ✅ FIXED LINE
-      shopId,
-      buyerName,
-      address,
-      phone,
-      items,
-      preferredDeliveryTime,
-      paymentMethod,
-      orderNotes,
-      totalAmount,
-      status: "Pending"
-    });
+      const productsTotal = items.reduce((sum, i) => sum + i.price * i.quantity, 0);
 
-    await newOrder.save();
+      // 🟢 Delivery charges by area (example: madhuban, colony, etc.)
+      const deliveryCharge = calculateDeliveryCharges(address);
 
-    res.status(201).json({
-      message: '✅ Order placed successfully',
-      order: newOrder
-    });
-  } catch (err) {
-    console.error('❌ Place order failed:', err);
-    res.status(500).json({ message: 'Failed to place order.' });
-  }
-};
+      // 🟢 Final total
+      const totalAmount = productsTotal + deliveryCharge;
+
+
+      // ✅ Use req.userId directly, set by verifyUser middleware
+      const newOrder = new Order({
+        userId: req.userId, // ✅ FIXED LINE
+        shopId,
+        buyerName,
+        address,
+        area,
+        phone,
+        items,
+        preferredDeliveryTime,
+        paymentMethod,
+        orderNotes,
+        productsTotal,      // seller ka revenue
+        deliveryCharge,      // admin ke liye visible
+        totalAmount,
+        pickupCode: Math.floor(1000 + Math.random() * 9000), // random 4-digit code
+
+        status: "Pending"
+      });
+
+      await newOrder.save();
+
+      res.status(201).json({
+        message: '✅ Order placed successfully',
+        order: newOrder
+      });
+    } catch (err) {
+      console.error('❌ Place order failed:', err);
+      res.status(500).json({ message: 'Failed to place order.' });
+    }
+  };
 
 
 

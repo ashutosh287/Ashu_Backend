@@ -13,6 +13,7 @@ const orderSchema = new mongoose.Schema({
   },
   buyerName: String,
   address: String,
+  area: String,
   phone: String,
   items: [
     {
@@ -25,7 +26,9 @@ const orderSchema = new mongoose.Schema({
   preferredDeliveryTime: String,
   paymentMethod: String,
   orderNotes: String,
-  totalAmount: String,
+  productsTotal: { type: Number, required: true },       // seller ka revenue
+  deliveryCharge: { type: Number, required: true },       // admin ke liye visible
+  totalAmount: { type: Number, required: true },
   status: {
     type: String,
     default: 'Pending',
@@ -36,4 +39,4 @@ const orderSchema = new mongoose.Schema({
   },
 });
 
-module.exports = mongoose.model('orders', orderSchema  );
+module.exports = mongoose.model('orders', orderSchema);
