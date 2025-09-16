@@ -5,61 +5,59 @@ const mongoose = require('mongoose');
 const calculateDeliveryCharges = require('../Utils/DeliveryCharges.js');
 
 
-  exports.placeOrder = async (req, res) => {
-    try {
-      const {
-        shopId,
-        buyerName,
-        address,
-        area,
-        phone,
-        items,
-        preferredDeliveryTime,
-        paymentMethod,
-        orderNotes,
-      } = req.body;
+exports.placeOrder = async (req, res) => {
+  try {
+    const {
+      shopId,
+      buyerName,
+      address,
+      area,
+      phone,
+      items,
+      preferredDeliveryTime,
+      paymentMethod,
+      orderNotes,
+    } = req.body;
 
+    const productsTotal = items.reduce((sum, i) => sum + i.price * i.quantity, 0);
 
-      const productsTotal = items.reduce((sum, i) => sum + i.price * i.quantity, 0);
+    // 🟢 Delivery charges (by address/area)
+    const deliveryCharge = calculateDeliveryCharges(address);
 
-      // 🟢 Delivery charges by area (example: madhuban, colony, etc.)
-      const deliveryCharge = calculateDeliveryCharges(address);
+    // 🟢 Final total
+    const totalAmount = productsTotal + deliveryCharge;
 
-      // 🟢 Final total
-      const totalAmount = productsTotal + deliveryCharge;
+    // ✅ Use req.userId from verifyUser middleware
+    const newOrder = new Order({
+      userId: req.userId,
+      shopId,
+      buyerName,
+      address,
+      area,
+      phone,
+      items,
+      preferredDeliveryTime,
+      paymentMethod,
+      orderNotes,
+      productsTotal,
+      deliveryCharge,
+      totalAmount,
+      // deliveryCode schema ke default se auto generate ho jayega
+      status: "Pending",
+    });
 
+    await newOrder.save();
 
-      // ✅ Use req.userId directly, set by verifyUser middleware
-      const newOrder = new Order({
-        userId: req.userId, // ✅ FIXED LINE
-        shopId,
-        buyerName,
-        address,
-        area,
-        phone,
-        items,
-        preferredDeliveryTime,
-        paymentMethod,
-        orderNotes,
-        productsTotal,      // seller ka revenue
-        deliveryCharge,      // admin ke liye visible
-        totalAmount,
-        pickupCode: Math.floor(1000 + Math.random() * 9000), // random 4-digit code
+    res.status(201).json({
+      message: "✅ Order placed successfully",
+      order: newOrder,
+    });
+  } catch (err) {
+    console.error("❌ Place order failed:", err);
+    res.status(500).json({ message: "Failed to place order." });
+  }
+};
 
-        status: "Pending"
-      });
-
-      await newOrder.save();
-
-      res.status(201).json({
-        message: '✅ Order placed successfully',
-        order: newOrder
-      });
-    } catch (err) {
-      console.error('❌ Place order failed:', err);
-      res.status(500).json({ message: 'Failed to place order.' });
-    }
-  };
 
 
 

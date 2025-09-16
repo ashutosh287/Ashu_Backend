@@ -29,6 +29,7 @@ const orderSchema = new mongoose.Schema({
   productsTotal: { type: Number, required: true },       // seller ka revenue
   deliveryCharge: { type: Number, required: true },       // admin ke liye visible
   totalAmount: { type: Number, required: true },
+  deliverycode: { type: Number, required: true, default: () => Math.floor(1000 + Math.random() * 9000), }, // random 4-digit code
   status: {
     type: String,
     default: 'Pending',
