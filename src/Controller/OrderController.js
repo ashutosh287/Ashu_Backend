@@ -354,7 +354,7 @@ exports.getOrdersRevenueStats = async (req, res) => {
       {
         $match: {
           shopId: new mongoose.Types.ObjectId(shopId),
-          status: "Delivered", // make sure this matches your DB
+          status: "Delivered",
         },
       },
       {
@@ -364,12 +364,16 @@ exports.getOrdersRevenueStats = async (req, res) => {
               $dateToString: {
                 format: "%Y-%m-%d",
                 date: "$placedAt",
-                timezone: "Asia/Kolkata" // ✅ Force IST timezone
+                timezone: "Asia/Kolkata",
               },
             },
           },
-          total: { $sum: "$totalAmount" },
-          count: { $sum: 1 }, // ✅ number of orders that day
+          total: {
+            $sum: {
+              $toDouble: { $ifNull: ["$totalAmount", 0] }
+            },
+          },
+          count: { $sum: 1 },
         },
       },
       { $sort: { "_id.day": 1 } },
@@ -377,9 +381,9 @@ exports.getOrdersRevenueStats = async (req, res) => {
 
     console.log("📊 Aggregated Revenue Data:", revenueData);
 
-    const todayStr = new Date()
-      .toLocaleDateString("en-CA", { timeZone: "Asia/Kolkata" });
-    // ✅ "YYYY-MM-DD" in IST
+    const todayStr = new Date().toLocaleDateString("en-CA", {
+      timeZone: "Asia/Kolkata",
+    });
 
     const todayRevenue = revenueData
       .filter((d) => d._id.day === todayStr)
