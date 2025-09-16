@@ -42,18 +42,17 @@ exports.placeOrder = async (req, res) => {
       productsTotal,
       deliveryCharge,
       totalAmount,
-      // deliveryCode schema ke default se auto generate ho jayega
       status: "Pending",
     });
 
     await newOrder.save();
 
     res.status(201).json({
-      message: "✅ Order placed successfully",
+      message: "Order placed successfully",
       order: newOrder,
     });
   } catch (err) {
-    console.error("❌ Place order failed:", err);
+    console.error("Place order failed:", err);
     res.status(500).json({ message: "Failed to place order." });
   }
 };
