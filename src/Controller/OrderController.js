@@ -335,3 +335,78 @@ exports.getRevenueStats = async (req, res) => {
 };
 
 
+
+exports.getOrdersRevenueStats = async (req, res) => {
+  try {
+    const sellerId = req.sellerId;
+    const shopId = req.shopId;
+
+    console.log("✅ Seller ID:", sellerId);
+    console.log("✅ Shop ID:", shopId);
+
+    const timeFrames = {
+      today: new Date(),
+      week: new Date(new Date().setDate(new Date().getDate() - 6)),
+      month: new Date(new Date().setMonth(new Date().getMonth() - 1)),
+    };
+
+    const revenueData = await Order.aggregate([
+      {
+        $match: {
+          shopId: new mongoose.Types.ObjectId(shopId),
+          status: "Delivered", // make sure this matches your DB
+        },
+      },
+      {
+        $group: {
+          _id: {
+            day: {
+              $dateToString: {
+                format: "%Y-%m-%d",
+                date: "$placedAt",
+                timezone: "Asia/Kolkata" // ✅ Force IST timezone
+              },
+            },
+          },
+          total: { $sum: "$totalAmount" },
+          count: { $sum: 1 }, // ✅ number of orders that day
+        },
+      },
+      { $sort: { "_id.day": 1 } },
+    ]);
+
+    console.log("📊 Aggregated Revenue Data:", revenueData);
+
+    const todayStr = new Date()
+      .toLocaleDateString("en-CA", { timeZone: "Asia/Kolkata" });
+    // ✅ "YYYY-MM-DD" in IST
+
+    const todayRevenue = revenueData
+      .filter((d) => d._id.day === todayStr)
+      .reduce((acc, cur) => acc + cur.total, 0);
+
+    const weekRevenue = revenueData
+      .filter((d) => new Date(d._id.day) >= timeFrames.week)
+      .reduce((acc, cur) => acc + cur.total, 0);
+
+    const monthRevenue = revenueData
+      .filter((d) => new Date(d._id.day) >= timeFrames.month)
+      .reduce((acc, cur) => acc + cur.total, 0);
+
+    res.json({
+      success: true,
+      today: todayRevenue,
+      week: weekRevenue,
+      month: monthRevenue,
+      chartData: revenueData.map((d) => ({
+        day: d._id.day,
+        total: d.total,
+        count: d.count,
+      })),
+    });
+  } catch (err) {
+    console.error("❌ Revenue error:", err);
+    res.status(500).json({ success: false, msg: "Something went wrong" });
+  }
+};
+

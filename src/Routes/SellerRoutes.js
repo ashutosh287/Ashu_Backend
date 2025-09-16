@@ -36,6 +36,7 @@ router.get("/Seller/profile", VerifySeller, SellerCtrl.getSellerProfile);
 router.get('/public-products', sellerProductCtrl.getPublicProducts);
 
 router.get('/revenue', VerifySeller, OrderCtrl.getRevenueStats);
+router.get('/revenueOrders', VerifySeller, OrderCtrl.getOrdersRevenueStats);
 
 router.post("/seller/request-otp", SellerCtrl.requestSellerOTP);
 router.post("/seller/verify-otp", SellerCtrl.verifySellerOTP);
