@@ -5,7 +5,7 @@ function calculateDeliveryCharges(area = "") {
     daha: 20,
     bazida: 30,
     "uncha smana": 30,
-    "arpana hospital": 30,
+    "arpana hospital": 40,
   };
   const key = area.trim().toLowerCase();
   return charges[key] || 0;
